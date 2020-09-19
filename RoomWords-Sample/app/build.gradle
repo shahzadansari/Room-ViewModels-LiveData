@@ -41,4 +41,7 @@ dependencies {
     implementation "android.arch.lifecycle:extensions:$rootProject.archLifecycleVersion"
     annotationProcessor "android.arch.lifecycle:compiler:$rootProject.archLifecycleVersion"
 
+    // recyclerview
+    implementation "androidx.recyclerview:recyclerview:1.1.0"
+
 }

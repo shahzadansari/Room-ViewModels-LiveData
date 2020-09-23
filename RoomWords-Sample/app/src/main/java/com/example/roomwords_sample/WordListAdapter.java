@@ -1,39 +1,48 @@
 package com.example.roomwords_sample;
 
-import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.DiffUtil;
+import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.List;
-
-public class WordListAdapter extends RecyclerView.Adapter<WordListAdapter.WordViewHolder> {
-
-    private final LayoutInflater mInflater;
-    private List<Word> mWords; // Cached copy of words
+public class WordListAdapter extends ListAdapter<Word, WordListAdapter.WordViewHolder> {
 
     private static ClickListener clickListener;
 
-    WordListAdapter(Context context) {
-        mInflater = LayoutInflater.from(context);
+    public WordListAdapter() {
+        super(DIFF_CALLBACK);
     }
+
+    private static final DiffUtil.ItemCallback<Word> DIFF_CALLBACK = new DiffUtil.ItemCallback<Word>() {
+        @Override
+        public boolean areItemsTheSame(Word oldItem, Word newItem) {
+            return oldItem.getId() == newItem.getId();
+        }
+
+        @Override
+        public boolean areContentsTheSame(Word oldItem, Word newItem) {
+            return oldItem.getWord().equals(newItem.getWord());
+        }
+    };
 
     @NonNull
     @Override
     public WordViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View itemView = mInflater.inflate(R.layout.recyclerview_item, parent, false);
+        View itemView = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.recyclerview_item, parent, false);
         return new WordViewHolder(itemView);
     }
 
     @Override
     public void onBindViewHolder(@NonNull WordViewHolder holder, int position) {
 
-        if (mWords != null) {
-            Word current = mWords.get(position);
+        if (getItem(position) != null) {
+            Word current = getItem(position);
             holder.wordItemView.setText(current.getWord());
         } else {
             // Covers the case of data not being ready yet.
@@ -42,20 +51,8 @@ public class WordListAdapter extends RecyclerView.Adapter<WordListAdapter.WordVi
 
     }
 
-    void setWords(List<Word> words) {
-        mWords = words;
-        notifyDataSetChanged();
-    }
-
     public Word getWordAtPosition(int position) {
-        return mWords.get(position);
-    }
-
-    @Override
-    public int getItemCount() {
-        if (mWords != null)
-            return mWords.size();
-        else return 0;
+        return getItem(position);
     }
 
     class WordViewHolder extends RecyclerView.ViewHolder {
